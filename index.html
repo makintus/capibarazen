@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Capibara Zen</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Capibara Zen">
+<meta name="theme-color" content="#9b59b6">
+<link rel="manifest" href="manifest.json">
+<link id="apple-icon" rel="apple-touch-icon" href="">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(155deg,#ffeeff 0%,#e8f0ff 50%,#f0fff8 100%);min-height:100vh;overflow-x:hidden;}
+.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen.active{display:flex;}
+h1,h2,.fredoka{font-family:'Fredoka One',cursive;}
+.header{display:flex;align-items:center;padding:14px 16px 10px;border-bottom:1px solid #ede7f6;gap:8px;background:rgba(255,255,255,0.6);}
+.back-btn{background:#ede7f6;border:none;border-radius:12px;padding:8px 14px;cursor:pointer;font-size:15px;color:#6c3483;font-family:'Fredoka One',cursive;flex-shrink:0;}
+.header h2{margin:0 auto;font-size:18px;color:#6c3483;text-align:center;}
+.header-action{width:44px;text-align:right;flex-shrink:0;}
+#home{padding:32px 20px;align-items:center;justify-content:space-between;}
+.home-hero{text-align:center;}
+.capibara-icon{font-size:72px;animation:bounce 2s ease-in-out infinite;display:block;}
+.home-hero h1{font-size:38px;color:#6c3483;letter-spacing:1px;margin-bottom:4px;}
+.home-hero p{color:#9b59b6;font-size:14px;}
+.home-cards{width:100%;display:flex;flex-direction:column;gap:14px;}
+.card-btn{border:none;border-radius:22px;padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.18);width:100%;}
+.card-emoji{font-size:42px;}
+.card-title{color:#fff;font-family:'Fredoka One',cursive;font-size:20px;line-height:1.2;text-align:left;}
+.card-sub{color:rgba(255,255,255,0.8);font-size:12px;text-align:left;}
+.card-arrow{margin-left:auto;color:rgba(255,255,255,0.7);font-size:26px;}
+.home-footer{color:#c39bd3;font-size:11px;text-align:center;}
+.content{padding:16px;flex:1;overflow-y:auto;}
+.sound-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.sound-btn{background:#fff;border-radius:22px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .25s;width:100%;}
+.sound-btn .sem{font-size:46px;}
+.sound-btn .sname{font-family:'Fredoka One',cursive;font-size:17px;color:#444;}
+.playing-lbl{font-size:11px;}
+.wave-box{margin-top:20px;padding:16px;background:#f8f4ff;border-radius:18px;text-align:center;}
+.waves{display:flex;align-items:center;justify-content:center;gap:4px;height:40px;}
+.wave-bar{width:4px;border-radius:2px;animation:wv 1.1s ease-in-out infinite;}
+.wave-box p{color:#9b59b6;font-size:13px;margin-top:10px;}
+.mandala-wrap{background:#fff;border-radius:20px;padding:8px;box-shadow:0 4px 20px rgba(108,52,131,0.12);margin:0 auto;width:fit-content;}
+#mandala-svg *{cursor:pointer;transition:fill .15s;}
+.palette-box{margin:14px 16px 0;padding:12px 14px;background:#fff;border-radius:18px;box-shadow:0 2px 12px rgba(0,0,0,.07);}
+.palette-hint{margin:0 0 8px;font-size:11px;color:#aaa;text-align:center;}
+.palette{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.color-dot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid #ddd;transition:transform .15s;}
+.color-dot.selected{border:3px solid #6c3483;transform:scale(1.25);}
+.reset-btn{background:#fce4ec;border:none;border-radius:10px;padding:6px 10px;cursor:pointer;font-size:18px;}
+.breath-card{width:100%;background:linear-gradient(135deg,#74b9ff,#a29bfe);border:none;border-radius:22px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:18px;box-shadow:0 6px 20px rgba(116,185,255,0.35);}
+.btitle{color:#fff;font-family:'Fredoka One',cursive;font-size:20px;}
+.bsub{color:rgba(255,255,255,.82);font-size:12px;}
+.pose-btn{width:100%;background:#fff;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-width:2px;border-style:solid;}
+.pem{font-size:38px;}
+.ptitle{font-family:'Fredoka One',cursive;font-size:17px;color:#444;}
+.psub{font-size:11px;color:#aaa;}
+.parrow{margin-left:auto;font-size:22px;}
+.breath-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.breath-circle{width:160px;height:160px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform 6s ease-in-out,background 1s,border-color 1s;font-size:52px;border:4px solid #74b9ff;background:radial-gradient(circle,#74b9ffbb,#74b9ff33);}
+.breath-label{margin-top:70px;font-family:'Fredoka One',cursive;font-size:30px;text-align:center;transition:color .4s;}
+.breath-hint{color:#bdc3c7;font-size:13px;margin-top:6px;}
+.breath-count{background:#f0fff4;border-radius:12px;padding:6px 16px;margin-bottom:20px;color:#00b894;font-size:13px;}
+.pose-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 24px;}
+.pose-emoji-big{font-size:96px;animation:bounce2 1.5s ease-in-out infinite;}
+.pose-desc-box{background:#fff;border-radius:20px;padding:18px 20px;box-shadow:0 4px 16px rgba(0,0,0,.08);text-align:center;margin:12px 0 0;width:100%;}
+.pose-desc-box p{font-size:15px;color:#555;line-height:1.65;}
+.progress-bar{background:#ecf0f1;border-radius:10px;height:8px;margin:18px 0 10px;width:100%;overflow:hidden;}
+.progress-fill{height:100%;border-radius:10px;transition:width 1s linear;}
+.timer-num{font-family:'Fredoka One',cursive;font-size:34px;text-align:center;}
+.timer-btn{margin-top:8px;border:none;border-radius:20px;padding:10px 28px;cursor:pointer;font-family:'Fredoka One',cursive;font-size:16px;color:#fff;}
+.pose-nav{display:flex;gap:12px;margin-top:16px;}
+.pose-nav button{border:none;border-radius:12px;padding:10px 16px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;}
+.pose-prev{background:#ecf0f1;color:#555;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes bounce2{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes wv{0%,100%{height:4px}50%{height:34px}}
+</style>
+</head>
+<body>
+
+<div id="home" class="screen active">
+  <div class="home-hero">
+    <span class="capibara-icon">🦫</span>
+    <h1>Capibara Zen</h1>
+    <p>Tan tranquilo como un capibara 🌿</p>
+  </div>
+  <div class="home-cards">
+    <button class="card-btn" style="background:linear-gradient(135deg,#667eea,#764ba2)" onclick="goto('music')">
+      <span class="card-emoji">🎵</span>
+      <div><div class="card-title">Música Relajante</div><div class="card-sub">Sonidos que calman</div></div>
+      <span class="card-arrow">›</span>
+    </button>
+    <button class="card-btn" style="background:linear-gradient(135deg,#f093fb,#f5576c)" onclick="goto('mandala')">
+      <span class="card-emoji">🎨</span>
+      <div><div class="card-title">Mandalas</div><div class="card-sub">Pinta y relájate</div></div>
+      <span class="card-arrow">›</span>
+    </button>
+    <button class="card-btn" style="background:linear-gradient(135deg,#4facfe,#00f2fe)" onclick="goto('yoga')">
+      <span class="card-emoji">🧘</span>
+      <div><div class="card-title">Yoga &amp; Respiración</div><div class="card-sub">Ejercicios de calma</div></div>
+      <span class="card-arrow">›</span>
+    </button>
+  </div>
+  <p class="home-footer">🦫 Creado con 💜 por Technovation Girls</p>
+</div>
+
+<div id="music" class="screen">
+  <div class="header">
+    <button class="back-btn" onclick="goto('home')">← Volver</button>
+    <h2>🎵 Música Relajante</h2>
+    <div class="header-action"></div>
+  </div>
+  <div class="content">
+    <p style="color:#9b59b6;text-align:center;font-size:13px;margin-bottom:16px;">Toca un sonido para escucharlo 👇</p>
+    <div class="sound-grid" id="sound-grid"></div>
+    <div class="wave-box" id="wave-box" style="display:none">
+      <div class="waves" id="waves"></div>
+      <p>Cierra los ojos y respira profundo 💜</p>
+    </div>
+  </div>
+</div>
+
+<div id="mandala" class="screen">
+  <div class="header">
+    <button class="back-btn" onclick="goto('home')">← Volver</button>
+    <h2>🎨 Mandala</h2>
+    <div class="header-action"><button class="reset-btn" onclick="resetMandala()">🔄</button></div>
+  </div>
+  <div class="content" style="display:flex;flex-direction:column;align-items:center;">
+    <div class="mandala-wrap">
+      <svg id="mandala-svg" width="300" height="300" viewBox="0 0 300 300"></svg>
+    </div>
+    <div class="palette-box" style="width:calc(100% - 0px)">
+      <p class="palette-hint">Elige un color y toca el mandala ✏️</p>
+      <div class="palette" id="palette"></div>
+    </div>
+  </div>
+</div>
+
+<div id="yoga" class="screen">
+  <div class="header">
+    <button class="back-btn" onclick="goto('home')">← Volver</button>
+    <h2>🧘 Yoga &amp; Respiración</h2>
+    <div class="header-action"></div>
+  </div>
+  <div class="content">
+    <button class="breath-card" onclick="goto('breathe')">
+      <span style="font-size:46px">🫁</span>
+      <div><div class="btitle">Respiración</div><div class="bsub">Inhala · Aguanta · Exhala</div></div>
+      <span style="margin-left:auto;color:rgba(255,255,255,.7);font-size:26px">›</span>
+    </button>
+    <p class="fredoka" style="color:#6c3483;font-size:16px;margin-bottom:10px;">Posturas de yoga 🌿</p>
+    <div id="pose-list"></div>
+  </div>
+</div>
+
+<div id="breathe" class="screen">
+  <div class="header">
+    <button class="back-btn" onclick="goto('yoga');stopBreath()">← Volver</button>
+    <h2>🫁 Respiración</h2>
+    <div class="header-action"></div>
+  </div>
+  <div class="breath-area">
+    <div class="breath-count" id="breath-count" style="display:none"></div>
+    <div class="breath-circle" id="breath-circle">🦫</div>
+    <div class="breath-label" id="breath-label">Inhala...</div>
+    <p class="breath-hint">Sigue el círculo con tu respiración</p>
+  </div>
+</div>
+
+<div id="pose" class="screen">
+  <div class="header">
+    <button class="back-btn" onclick="goto('yoga')">← Volver</button>
+    <h2 id="pose-header"></h2>
+    <div class="header-action"></div>
+  </div>
+  <div class="pose-content">
+    <div class="pose-emoji-big" id="pose-emoji"></div>
+    <div class="pose-desc-box"><p id="pose-desc"></p></div>
+    <div class="progress-bar"><div class="progress-fill" id="pose-progress" style="width:0%"></div></div>
+    <div class="timer-num" id="pose-timer"></div>
+    <button class="timer-btn" id="pose-start-btn" onclick="toggleTimer()">▶ Empezar</button>
+    <div class="pose-nav">
+      <button class="pose-prev" onclick="changePose(-1)">← Anterior</button>
+      <button id="pose-next-btn" onclick="changePose(1)" style="background:#a29bfe;color:#fff;border-radius:12px;padding:10px 16px;cursor:pointer;font-family:'Nunito';font-size:13px;border:none">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var SOUNDS=[
+  {id:"rain",emoji:"🌧️",name:"Lluvia",color:"#74b9ff"},
+  {id:"waves",emoji:"🌊",name:"Olas",color:"#0984e3"},
+  {id:"forest",emoji:"🌿",name:"Bosque",color:"#00b894"},
+  {id:"bowls",emoji:"🔔",name:"Cuencos",color:"#a29bfe"}
+];
+var PALETTE_COLORS=[
+  "#FF6B9D","#FF9A8B","#FFD93D","#6BCB77",
+  "#4ECDC4","#A29BFE","#FD79A8","#FDCB6E",
+  "#74B9FF","#55EFC4","#FAB1A0","#FFFFFF",
+  "#DFE6E9","#B2BEC3","#636E72","#2D3436"
+];
+var POSES=[
+  {emoji:"🌳",name:"Árbol",color:"#55efc4",time:30,desc:"Ponte de pie. Sube un pie a tu rodilla. Junta las manos arriba. ¡Respira y mantén el equilibrio como un árbol fuerte!"},
+  {emoji:"⭐",name:"Estrella",color:"#fdcb6e",time:20,desc:"Abre las piernas y los brazos como una gran estrella. Siente toda tu energía irradiando hacia fuera. ¡Brilla!"},
+  {emoji:"🐱",name:"Gato-Vaca",color:"#fd79a8",time:40,desc:"En cuatro patas: arquea la espalda hacia arriba como un gato enfadado, luego húndela como una vaca. Repite 5 veces."},
+  {emoji:"🦋",name:"Mariposa",color:"#a29bfe",time:30,desc:"Siéntate en el suelo y junta las plantas de los pies. Mueve las rodillas arriba y abajo suavemente como si fueras una mariposa."},
+  {emoji:"🐍",name:"Cobra",color:"#fab1a0",time:25,desc:"Túmbate boca abajo. Pon las manos bajo los hombros. Sube el pecho despacio como una cobra que se despierta. Aguanta y baja."}
+];
+var BREATH_PHASES=[
+  {label:"Inhala...",dur:4000,color:"#74b9ff",scale:1.55},
+  {label:"Aguanta...",dur:3000,color:"#a29bfe",scale:1.55},
+  {label:"Exhala...",dur:6000,color:"#55efc4",scale:1.0}
+];
+
+function goto(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  if(id==='breathe')startBreath();
+  if(id!=='music')stopAllAudio();
+}
+
+var audioCtx=null,audioNodes=[],activeSound=null;
+function initAudio(){
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended')audioCtx.resume();
+}
+function stopAllAudio(){
+  audioNodes.forEach(function(n){
+    try{if(n.stop)n.stop();}catch(e){}
+    try{if(n.disconnect)n.disconnect();}catch(e){}
+    if(n._iv)clearInterval(n._iv);
+  });
+  audioNodes=[];activeSound=null;
+  document.querySelectorAll('.sound-btn').forEach(function(b){
+    b.style.background='#fff';b.style.boxShadow='';
+    var l=b.querySelector('.playing-lbl');if(l)l.remove();
+    b.querySelector('.sname').style.color='#444';
+  });
+  document.getElementById('wave-box').style.display='none';
+}
+function makeNoise(){
+  var buf=audioCtx.createBuffer(1,audioCtx.sampleRate*3,audioCtx.sampleRate);
+  var d=buf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  var s=audioCtx.createBufferSource();s.buffer=buf;s.loop=true;return s;
+}
+var AUDIO_FNS={
+  rain:function(){
+    var n=makeNoise(),f=audioCtx.createBiquadFilter(),g=audioCtx.createGain();
+    f.type='bandpass';f.frequency.value=700;f.Q.value=0.4;g.gain.value=0.35;
+    n.connect(f);f.connect(g);g.connect(audioCtx.destination);n.start();
+    function drip(){var o=audioCtx.createOscillator();o.frequency.value=1200+Math.random()*600;var dg=audioCtx.createGain();dg.gain.setValueAtTime(0.08,audioCtx.currentTime);dg.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.25);o.connect(dg);dg.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+0.28);}
+    drip();var iv=setInterval(drip,200);audioNodes.push(n,{_iv:iv});
+  },
+  waves:function(){
+    [55,75,95].forEach(function(fr,i){
+      var o=audioCtx.createOscillator();o.type='sine';o.frequency.value=fr;
+      var lfo=audioCtx.createOscillator();lfo.frequency.value=0.12+i*0.04;
+      var lg=audioCtx.createGain();lg.gain.value=18;lfo.connect(lg);lg.connect(o.frequency);
+      var g=audioCtx.createGain();g.gain.value=0.06;o.connect(g);g.connect(audioCtx.destination);
+      o.start();lfo.start();audioNodes.push(o,lfo);
+    });
+  },
+  forest:function(){
+    var n=makeNoise(),f=audioCtx.createBiquadFilter(),g=audioCtx.createGain();
+    f.type='lowpass';f.frequency.value=350;g.gain.value=0.06;
+    n.connect(f);f.connect(g);g.connect(audioCtx.destination);n.start();
+    function bird(){
+      var cnt=2+Math.floor(Math.random()*3);
+      for(var c=0;c<cnt;c++){var dl=c*0.13;var o=audioCtx.createOscillator();o.type='sine';var fr=1300+Math.random()*1400;o.frequency.setValueAtTime(fr,audioCtx.currentTime+dl);o.frequency.linearRampToValueAtTime(fr*1.4,audioCtx.currentTime+dl+0.1);o.frequency.linearRampToValueAtTime(fr*0.9,audioCtx.currentTime+dl+0.22);var bg=audioCtx.createGain();bg.gain.setValueAtTime(0,audioCtx.currentTime+dl);bg.gain.linearRampToValueAtTime(0.07,audioCtx.currentTime+dl+0.05);bg.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dl+0.28);o.connect(bg);bg.connect(audioCtx.destination);o.start(audioCtx.currentTime+dl);o.stop(audioCtx.currentTime+dl+0.32);}
+    }
+    bird();var iv=setInterval(bird,3000);audioNodes.push(n,{_iv:iv});
+  },
+  bowls:function(){
+    var freqs=[396,417,528,639];
+    function strike(fr,dl){
+      if(!dl)dl=0;
+      var o=audioCtx.createOscillator();o.type='sine';o.frequency.value=fr;
+      var o2=audioCtx.createOscillator();o2.type='sine';o2.frequency.value=fr*2.76;
+      var g1=audioCtx.createGain(),g2=audioCtx.createGain();
+      g1.gain.setValueAtTime(0,audioCtx.currentTime+dl);g1.gain.linearRampToValueAtTime(0.14,audioCtx.currentTime+dl+0.12);g1.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dl+7);
+      g2.gain.setValueAtTime(0,audioCtx.currentTime+dl);g2.gain.linearRampToValueAtTime(0.04,audioCtx.currentTime+dl+0.1);g2.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dl+4);
+      o.connect(g1);g1.connect(audioCtx.destination);o2.connect(g2);g2.connect(audioCtx.destination);
+      o.start(audioCtx.currentTime+dl);o.stop(audioCtx.currentTime+dl+8);o2.start(audioCtx.currentTime+dl);o2.stop(audioCtx.currentTime+dl+5);
+    }
+    freqs.forEach(function(f,i){strike(f,i*1.4);});
+    var iv=setInterval(function(){freqs.forEach(function(f,i){strike(f,i*1.4);});},10000);
+    audioNodes.push({_iv:iv});
+  }
+};
+
+function toggleSound(id,color){
+  if(activeSound===id){stopAllAudio();return;}
+  initAudio();stopAllAudio();activeSound=id;
+  AUDIO_FNS[id]();
+  var btn=document.getElementById('snd-'+id);
+  btn.style.background=color;btn.style.boxShadow='0 8px 24px '+color+'55';
+  btn.querySelector('.sname').style.color='#fff';
+  var lbl=document.createElement('span');lbl.className='playing-lbl';lbl.style.color='rgba(255,255,255,.8)';lbl.textContent='♪ sonando...';btn.appendChild(lbl);
+  var wb=document.getElementById('wave-box');wb.style.display='block';
+  var wc=document.getElementById('waves');wc.innerHTML='';
+  for(var i=0;i<8;i++){var b=document.createElement('div');b.className='wave-bar';b.style.background=color;b.style.animationDelay=(i*0.1)+'s';wc.appendChild(b);}
+}
+
+(function(){
+  var grid=document.getElementById('sound-grid');
+  SOUNDS.forEach(function(s){
+    var btn=document.createElement('button');btn.className='sound-btn';btn.id='snd-'+s.id;
+    btn.style.border='3px solid '+s.color;
+    btn.innerHTML='<span class="sem">'+s.emoji+'</span><span class="sname">'+s.name+'</span>';
+    btn.onclick=(function(sid,sc){return function(){toggleSound(sid,sc);};})(s.id,s.color);
+    grid.appendChild(btn);
+  });
+})();
+
+var inkColor='#FF6B9D';
+var mandalaColors={};
+function buildMandala(){
+  var svg=document.getElementById('mandala-svg');
+  var NS='http://www.w3.org/2000/svg';
+  var cx=150,cy=150;
+  [32,65,68,103,105,131,143].forEach(function(r){
+    var c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);
+    c.setAttribute('fill','none');c.setAttribute('stroke','#e0d0f0');c.setAttribute('stroke-width',r===143?'2':'1');
+    svg.appendChild(c);
+  });
+  var els=[];
+  els.push({tag:'circle',id:'c0',props:{cx:cx,cy:cy,r:22}});
+  for(var i=0;i<8;i++){var a=(i*45-90)*Math.PI/180;els.push({tag:'circle',id:'d1-'+i,props:{cx:cx+Math.cos(a)*44,cy:cy+Math.sin(a)*44,r:9}});}
+  for(var i=0;i<8;i++)els.push({tag:'ellipse',id:'p1-'+i,props:{cx:cx,cy:cy-54,rx:11,ry:22,transform:'rotate('+(i*45)+' '+cx+' '+cy+')'}});
+  for(var i=0;i<8;i++){var a=(i*45-90)*Math.PI/180;var px=cx+Math.cos(a)*80,py=cy+Math.sin(a)*80;els.push({tag:'rect',id:'di-'+i,props:{x:px-11,y:py-11,width:22,height:22,transform:'rotate('+(45+i*45)+' '+px+' '+py+')'}});}
+  for(var i=0;i<8;i++)els.push({tag:'ellipse',id:'p2-'+i,props:{cx:cx,cy:cy-90,rx:13,ry:26,transform:'rotate('+(i*45+22.5)+' '+cx+' '+cy+')'}});
+  for(var i=0;i<16;i++){var a=(i*22.5-90)*Math.PI/180;els.push({tag:'circle',id:'d3-'+i,props:{cx:cx+Math.cos(a)*114,cy:cy+Math.sin(a)*114,r:7}});}
+  for(var i=0;i<8;i++)els.push({tag:'ellipse',id:'p3-'+i,props:{cx:cx,cy:cy-122,rx:12,ry:24,transform:'rotate('+(i*45)+' '+cx+' '+cy+')'}});
+  els.forEach(function(el){
+    var e=document.createElementNS(NS,el.tag);
+    Object.keys(el.props).forEach(function(k){e.setAttribute(k,el.props[k]);});
+    e.setAttribute('fill','#FFFFFF');e.setAttribute('stroke','#e0d0f0');e.setAttribute('stroke-width','1');
+    mandalaColors[el.id]='#FFFFFF';
+    e.onclick=(function(elem,eid){return function(){mandalaColors[eid]=inkColor;elem.setAttribute('fill',inkColor);};})(e,el.id);
+    svg.appendChild(e);
+  });
+}
+function resetMandala(){
+  Object.keys(mandalaColors).forEach(function(id){mandalaColors[id]='#FFFFFF';});
+  document.querySelectorAll('#mandala-svg [fill]').forEach(function(e){if(e.getAttribute('fill')!=='none')e.setAttribute('fill','#FFFFFF');});
+}
+(function(){
+  buildMandala();
+  var pal=document.getElementById('palette');
+  PALETTE_COLORS.forEach(function(c){
+    var d=document.createElement('button');d.className='color-dot';d.style.background=c;
+    if(c==='#FFFFFF')d.style.boxShadow='inset 0 0 0 1px #ccc';
+    if(c===inkColor)d.classList.add('selected');
+    d.onclick=(function(col,dot){return function(){inkColor=col;document.querySelectorAll('.color-dot').forEach(function(x){x.classList.remove('selected');});dot.classList.add('selected');};})(c,d);
+    pal.appendChild(d);
+  });
+})();
+
+var breathIdx=0,breathCount=0,breathTimer=null;
+function startBreath(){breathIdx=0;breathCount=0;document.getElementById('breath-count').style.display='none';runBreathPhase();}
+function stopBreath(){if(breathTimer)clearTimeout(breathTimer);breathTimer=null;}
+function runBreathPhase(){
+  var ph=BREATH_PHASES[breathIdx];
+  var circle=document.getElementById('breath-circle');
+  var label=document.getElementById('breath-label');
+  circle.style.transform='scale('+ph.scale+')';
+  circle.style.background='radial-gradient(circle,'+ph.color+'bb,'+ph.color+'33)';
+  circle.style.borderColor=ph.color;
+  circle.style.boxShadow='0 0 50px '+ph.color+'55';
+  label.textContent=ph.label;label.style.color=ph.color;
+  breathTimer=setTimeout(function(){
+    breathIdx=(breathIdx+1)%BREATH_PHASES.length;
+    if(breathIdx===0){breathCount++;var cnt=document.getElementById('breath-count');cnt.style.display='block';cnt.textContent=breathCount+' respiraci'+(breathCount===1?'ón':'ones')+' completa'+(breathCount===1?'':'s')+' 🎉';}
+    runBreathPhase();
+  },ph.dur);
+}
+
+var poseIdx=0,poseRemain=0,poseRunning=false,poseInterval=null;
+(function(){
+  var list=document.getElementById('pose-list');
+  POSES.forEach(function(p,i){
+    var btn=document.createElement('button');btn.className='pose-btn';btn.style.borderColor=p.color;
+    btn.innerHTML='<span class="pem">'+p.emoji+'</span><div class="pinfo"><div class="ptitle">'+p.name+'</div><div class="psub">'+p.time+'s · para niños 👧</div></div><span class="parrow" style="color:'+p.color+'">›</span>';
+    btn.onclick=(function(idx){return function(){openPose(idx);};})(i);
+    list.appendChild(btn);
+  });
+})();
+function openPose(i){
+  poseIdx=i;var p=POSES[i];
+  if(poseInterval)clearInterval(poseInterval);
+  poseRunning=false;poseRemain=p.time;
+  document.getElementById('pose-header').textContent=p.emoji+' '+p.name;
+  document.getElementById('pose-emoji').textContent=p.emoji;
+  document.getElementById('pose-desc').textContent=p.desc;
+  document.getElementById('pose-timer').textContent=p.time+'s';
+  document.getElementById('pose-timer').style.color=p.color;
+  document.getElementById('pose-progress').style.width='0%';
+  document.getElementById('pose-progress').style.background=p.color;
+  document.getElementById('pose-start-btn').textContent='▶ Empezar';
+  document.getElementById('pose-start-btn').style.background=p.color;
+  document.getElementById('pose-next-btn').style.background=p.color;
+  goto('pose');
+}
+function toggleTimer(){
+  var p=POSES[poseIdx];
+  if(poseRemain===0){poseRemain=p.time;poseRunning=false;document.getElementById('pose-start-btn').textContent='▶ Empezar';document.getElementById('pose-progress').style.width='0%';document.getElementById('pose-timer').textContent=p.time+'s';return;}
+  if(poseRunning){poseRunning=false;clearInterval(poseInterval);document.getElementById('pose-start-btn').textContent='▶ Empezar';}
+  else{poseRunning=true;document.getElementById('pose-start-btn').textContent='⏸ Pausar';poseInterval=setInterval(function(){poseRemain--;var pct=((p.time-poseRemain)/p.time)*100;document.getElementById('pose-progress').style.width=pct+'%';document.getElementById('pose-timer').textContent=poseRemain+'s';if(poseRemain<=0){clearInterval(poseInterval);poseRunning=false;document.getElementById('pose-start-btn').textContent='🔄 Repetir';}},1000);}
+}
+function changePose(dir){poseIdx=(poseIdx+dir+POSES.length)%POSES.length;openPose(poseIdx);}
+
+// ── PWA: generar icono emoji y registrar SW ──
+(function(){
+  function makeIcon(size){
+    var c=document.createElement('canvas');c.width=size;c.height=size;
+    var ctx=c.getContext('2d');
+    var g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
+    g.addColorStop(0,'#e8d5f5');g.addColorStop(1,'#9b59b6');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(size/2,size/2,size/2,0,Math.PI*2);ctx.fill();
+    ctx.font=Math.floor(size*0.55)+'px serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('\u{1F9AB}',size/2,size/2+size*0.04);
+    return c.toDataURL('image/png');
+  }
+  var icon192=makeIcon(192);
+  var icon512=makeIcon(512);
+  document.getElementById('apple-icon').href=icon192;
+  var manifest={name:'Capibara Zen',short_name:'Capibara Zen',description:'App de relajacion para ninos',start_url:'.',display:'standalone',background_color:'#f0e6ff',theme_color:'#9b59b6',orientation:'portrait',icons:[{src:icon192,sizes:'192x192',type:'image/png',purpose:'any maskable'},{src:icon512,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+  var blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  var url=URL.createObjectURL(blob);
+  var link=document.querySelector('link[rel="manifest"]');
+  if(link)link.href=url;
+  if('serviceWorker' in navigator){
+    var swCode="const CACHE='capibara-v1';self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['.']))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));";
+    var swBlob=new Blob([swCode],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(){});
+  }
+  var deferredPrompt=null;
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;var b=document.getElementById('install-banner');if(b)b.style.display='flex';});
+  document.addEventListener('click',function(e){
+    if(e.target&&e.target.id==='install-btn'&&deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;var b=document.getElementById('install-banner');if(b)b.style.display='none';});}
+    if(e.target&&e.target.id==='install-close'){var b=document.getElementById('install-banner');if(b)b.style.display='none';}
+  });
+  window.addEventListener('appinstalled',function(){var b=document.getElementById('install-banner');if(b)b.style.display='none';});
+})();
+
+</script>
+
+<div id="install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#6c3483,#9b59b6);padding:14px 16px;align-items:center;gap:10px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.2);">
+  <span style="font-size:28px">&#129451;</span>
+  <div style="flex:1">
+    <div style="color:#fff;font-family:'Fredoka One',cursive;font-size:15px;">&#161;Instala Capibara Zen!</div>
+    <div style="color:rgba(255,255,255,0.8);font-size:11px;font-family:Nunito,sans-serif;">A&#241;ade la app a tu pantalla de inicio</div>
+  </div>
+  <button id="install-btn" style="background:#fff;color:#6c3483;border:none;border-radius:16px;padding:8px 16px;cursor:pointer;font-family:'Fredoka One',cursive;font-size:13px;">Instalar</button>
+  <button id="install-close" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;font-size:20px;padding:4px;">&#10005;</button>
+</div>
+
+</body>
+</html>
