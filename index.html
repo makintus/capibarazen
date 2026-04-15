@@ -322,18 +322,6 @@ function toggleSound(id,color){
   for(var i=0;i<8;i++){var b=document.createElement('div');b.className='wave-bar';b.style.background=color;b.style.animationDelay=(i*0.1)+'s';wc.appendChild(b);}
 }
 
-(function(){
-  var grid=document.getElementById('sound-grid');
-  if(!grid)return;
-  SOUNDS.forEach(function(s){
-    var btn=document.createElement('button');btn.className='sound-btn';btn.id='snd-'+s.id;
-    btn.style.border='3px solid '+s.color;
-    btn.innerHTML='<span class="sem">'+s.emoji+'</span><span class="sname">'+s.name+'</span>';
-    btn.onclick=(function(sid,sc){return function(){toggleSound(sid,sc);};})(s.id,s.color);
-    grid.appendChild(btn);
-  });
-})();
-
 var inkColor='#FF6B9D';
 var mandalaColors={};
 function buildMandala(){
@@ -356,19 +344,6 @@ function resetMandala(){
   Object.keys(mandalaColors).forEach(function(id){mandalaColors[id]='#FFFFFF';});
   document.querySelectorAll('#mandala-svg [fill]').forEach(function(e){if(e.getAttribute('fill')!=='none')e.setAttribute('fill','#FFFFFF');});
 }
-(function(){
-  buildMandala();
-  var pal=document.getElementById('palette');
-  if(!pal)return;
-  PALETTE_COLORS.forEach(function(c){
-    var d=document.createElement('button');d.className='color-dot';d.style.background=c;
-    if(c==='#FFFFFF')d.style.boxShadow='inset 0 0 0 1px #ccc';
-    if(c===inkColor)d.classList.add('selected');
-    d.onclick=(function(col,dot){return function(){inkColor=col;document.querySelectorAll('.color-dot').forEach(function(x){x.classList.remove('selected');});dot.classList.add('selected');};})(c,d);
-    pal.appendChild(d);
-  });
-})();
-
 var breathIdx=0,breathCount=0,breathTimer=null;
 var BREATH_PHASES=[
   {label:'Inhala...',dur:4000,color:'#74b9ff',scale:1.55},
@@ -394,30 +369,6 @@ function runBreathPhase(){
 }
 
 // PWA icon generation
-(function(){
-  function makeIcon(size){
-    var c=document.createElement('canvas');c.width=size;c.height=size;
-    var ctx=c.getContext('2d');
-    var g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
-    g.addColorStop(0,'#e8d5f5');g.addColorStop(1,'#9b59b6');
-    ctx.fillStyle=g;ctx.beginPath();ctx.arc(size/2,size/2,size/2,0,Math.PI*2);ctx.fill();
-    ctx.font=Math.floor(size*0.55)+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('\u{1F9AB}',size/2,size/2+size*0.04);
-    return c.toDataURL('image/png');
-  }
-  var icon=makeIcon(192);
-  var appleIcon=document.getElementById('apple-icon');if(appleIcon)appleIcon.href=icon;
-  var manifest={name:'Capibara Zen',short_name:'Capibara Zen',start_url:'.',display:'standalone',background_color:'#f0e6ff',theme_color:'#9b59b6',orientation:'portrait',icons:[{src:icon,sizes:'192x192',type:'image/png'}]};
-  var blob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
-  var link=document.querySelector('link[rel="manifest"]');if(link)link.href=URL.createObjectURL(blob);
-  var deferredPrompt=null;
-  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;var b=document.getElementById('install-banner');if(b)b.style.display='flex';});
-  document.addEventListener('click',function(e){
-    if(e.target&&e.target.id==='install-btn'&&deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;var b=document.getElementById('install-banner');if(b)b.style.display='none';});}
-    if(e.target&&e.target.id==='install-close'){var b=document.getElementById('install-banner');if(b)b.style.display='none';}
-  });
-})();
-
 
 var SOUNDS=[
   {id:"rain",emoji:"🌧️",name:"Lluvia",color:"#74b9ff"},
@@ -763,25 +714,6 @@ function buildSavasana(W,H){
     '<text class="sz3" x="'+(92*s)+'" y="'+(16*s)+'" font-size="'+(17*s)+'" fill="#c9973a" font-weight="bold" font-family="Arial">z</text>';
 }
 
-/* ─── BUILD YOGA GRID ─── */
-(function(){
-  var grid = document.getElementById('yoga-grid');
-  if(!grid) return;
-  POSES.forEach(function(p,i){
-    var btn = document.createElement('button');
-    btn.className = 'yoga-card-btn';
-    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-    svg.setAttribute('width','90'); svg.setAttribute('height','90');
-    svg.setAttribute('viewBox','0 0 90 90');
-    svg.innerHTML = p.svgSmall;
-    btn.appendChild(svg);
-    var nm = document.createElement('div'); nm.className='yname'; nm.textContent=p.name; btn.appendChild(nm);
-    var sb = document.createElement('div'); sb.className='ysub'; sb.textContent=p.sanskrit; btn.appendChild(sb);
-    btn.onclick=(function(idx){return function(){openPoseDetail(idx);};})(i);
-    grid.appendChild(btn);
-  });
-})();
-
 /* ─── POSE DETAIL ─── */
 var currentPoseIdx=0, pdRemain=0, pdRunning=false, pdInterval=null;
 
@@ -889,6 +821,73 @@ var _logoDataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEsCAYAAA
   window.addEventListener('appinstalled',function(){var b=document.getElementById('install-banner');if(b)b.style.display='none';});
 })();
 
+
+window.addEventListener('load', function(){
+(function(){
+  var grid=document.getElementById('sound-grid');
+  if(!grid)return;
+  SOUNDS.forEach(function(s){
+    var btn=document.createElement('button');btn.className='sound-btn';btn.id='snd-'+s.id;
+    btn.style.border='3px solid '+s.color;
+    btn.innerHTML='<span class="sem">'+s.emoji+'</span><span class="sname">'+s.name+'</span>';
+    btn.onclick=(function(sid,sc){return function(){toggleSound(sid,sc);};})(s.id,s.color);
+    grid.appendChild(btn);
+  });
+})();
+(function(){
+  buildMandala();
+  var pal=document.getElementById('palette');
+  if(!pal)return;
+  PALETTE_COLORS.forEach(function(c){
+    var d=document.createElement('button');d.className='color-dot';d.style.background=c;
+    if(c==='#FFFFFF')d.style.boxShadow='inset 0 0 0 1px #ccc';
+    if(c===inkColor)d.classList.add('selected');
+    d.onclick=(function(col,dot){return function(){inkColor=col;document.querySelectorAll('.color-dot').forEach(function(x){x.classList.remove('selected');});dot.classList.add('selected');};})(c,d);
+    pal.appendChild(d);
+  });
+})();
+/* ─── BUILD YOGA GRID ─── */
+(function(){
+  var grid = document.getElementById('yoga-grid');
+  if(!grid) return;
+  POSES.forEach(function(p,i){
+    var btn = document.createElement('button');
+    btn.className = 'yoga-card-btn';
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width','90'); svg.setAttribute('height','90');
+    svg.setAttribute('viewBox','0 0 90 90');
+    svg.innerHTML = p.svgSmall;
+    btn.appendChild(svg);
+    var nm = document.createElement('div'); nm.className='yname'; nm.textContent=p.name; btn.appendChild(nm);
+    var sb = document.createElement('div'); sb.className='ysub'; sb.textContent=p.sanskrit; btn.appendChild(sb);
+    btn.onclick=(function(idx){return function(){openPoseDetail(idx);};})(i);
+    grid.appendChild(btn);
+  });
+})();
+(function(){
+  function makeIcon(size){
+    var c=document.createElement("canvas");c.width=size;c.height=size;
+    var ctx=c.getContext("2d");
+    var g=ctx.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);
+    g.addColorStop(0,"#e8d5f5");g.addColorStop(1,"#9b59b6");
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(size/2,size/2,size/2,0,Math.PI*2);ctx.fill();
+    ctx.font=Math.floor(size*0.55)+"px serif";ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText("🦫",size/2,size/2+size*0.04);
+    return c.toDataURL("image/png");
+  }
+  var icon=makeIcon(192);
+  var ai=document.getElementById("apple-icon");if(ai)ai.href=icon;
+  var manifest={name:"Capibara Zen",short_name:"Capibara Zen",start_url:".",display:"standalone",background_color:"#f0e6ff",theme_color:"#9b59b6",orientation:"portrait",icons:[{src:icon,sizes:"192x192",type:"image/png"}]};
+  var blob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"});
+  var link=document.querySelector('link[rel="manifest"]');if(link)link.href=URL.createObjectURL(blob);
+  var deferredPrompt=null;
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();deferredPrompt=e;var b=document.getElementById("install-banner");if(b)b.style.display="flex";});
+  document.addEventListener("click",function(e){
+    if(e.target&&e.target.id==="install-btn"&&deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;var b=document.getElementById("install-banner");if(b)b.style.display="none";});}
+    if(e.target&&e.target.id==="install-close"){var b=document.getElementById("install-banner");if(b)b.style.display="none";}
+  });
+})();
+});
 </script>
 
 <div id="install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#6c3483,#9b59b6);padding:14px 16px;align-items:center;gap:10px;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.2);">
